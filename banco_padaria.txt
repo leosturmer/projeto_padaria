@@ -1,0 +1,37 @@
+CREATE DATABASE padaria;
+
+USE padaria;
+
+CREATE TABLE produtos(
+	id_produtos INT AUTO_INCREMENT PRIMARY KEY,
+	nome VARCHAR(50) NOT NULL,
+	valor DECIMAL, 
+	quantidade INT
+);
+
+CREATE TABLE login(
+	id_login INT PRIMARY KEY AUTO_INCREMENT,
+	login VARCHAR(50) NOT NULL,
+	senha VARCHAR(255) NOT NULL
+);
+
+INSERT INTO login (id_login, login, senha)
+VALUES (null, ‘admin’, SHA2(‘123’, 256));
+
+CREATE TABLE perfil(
+	id_perfil INT AUTO_INCREMENT PRIMARY KEY,
+nome_perfil VARCHAR(15) NOT NULL
+);
+
+INSERT INTO perfil VALUES 
+	(null, ‘admin’),
+	(null, ‘usuario’);
+
+ALTER TABLE login ADD COLUMN perfil INT;
+
+ALTER TABLE login
+ADD FOREIGN KEY (perfil) 
+REFERENCES perfil (id_perfil)
+ON DELETE CASCADE;
+
+UPDATE login SET perfil = 1;
