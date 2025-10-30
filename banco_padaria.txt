@@ -20,7 +20,7 @@ VALUES (null, ‘admin’, SHA2(‘123’, 256));
 
 CREATE TABLE perfil(
 	id_perfil INT AUTO_INCREMENT PRIMARY KEY,
-nome_perfil VARCHAR(15) NOT NULL
+	nome_perfil VARCHAR(15) NOT NULL
 );
 
 INSERT INTO perfil VALUES 
@@ -35,3 +35,5 @@ REFERENCES perfil (id_perfil)
 ON DELETE CASCADE;
 
 UPDATE login SET perfil = 1;
+
+INSERT INTO perfil VALUES (null, '');

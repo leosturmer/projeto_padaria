@@ -8,7 +8,7 @@ from tkinter import messagebox
 
 
 class ConexaoBanco:
-    def get_conexa(self):
+    def get_conexao(self):
         conexao = None
         try:
             conexao = mysql.connector.connect(
