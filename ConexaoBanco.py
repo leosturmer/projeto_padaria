@@ -1,5 +1,3 @@
-# .venvz
-
 # python.exe -m pip install --upgrade pip
 
 import mysql.connector
