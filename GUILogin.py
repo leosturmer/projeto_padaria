@@ -76,42 +76,40 @@ class LoginGui:
     def verificar_login(self):
         login = self.entry_login.get()
         senha = self.entry_senha.get()
-        nome_perfil = self.combobox_perfil.get()
-
-        id_perfil = self.perfis.get(nome_perfil)
+        nomeperfil = self.combobox_perfil.get()
+        id_perfil = self.perfis.get(nomeperfil)
 
         # Verificação dos valores antes da consulta
-
         print(
-            f"Login: {login}, Senha: {senha}, Perfil: {nome_perfil} (ID: {id_perfil})")
+            f"Login: {login}, Senha: {senha}, Perfil: {nomeperfil} (ID: {id_perfil}) ")
 
         try:
-            # Conexão com o banco de dados
+            # Conexão com Banco de Dados
             conexao = ConexaoBanco().get_conexao()
             cursor = conexao.cursor()
 
-            # Consulta para verificar login, senha e perfil
-
-            query = "SELECT * FROM login WHERE login = %s AND senha %s AND perfil = %s"
+            # Consulta para verificar o login, senha e perfil
+            query = "SELECT * FROM login WHERE login = %s AND senha = %s AND perfil = %s "
             cursor.execute(query, (login, senha, id_perfil))
             resultado = cursor.fetchone()
-            
-            print(f"Resultado da consulta: {resultado}") # Adicionando depuração
+
+            # Adicionando depuração
+            print(f"Resultado da consulta: {resultado}")
 
             if resultado:
-                messagebox.showinfo(f"Login bem-sucedido!", f"Bem-vindo, {login}!")
-                self.janela.withdraw() # Fecha a janela de login
+                messagebox.showinfo(f"Login bem-sucedido",
+                                    f"Bem vindo, {login}!")
+                self.janela.withdraw()  # Fecha a janela de login
                 self.abrir_menu_principal()
-
             else:
-                messagebox.showerror("Erro de login", "Login, senha ou perfil incorretos!")
+                messagebox.showerror(
+                    "Erro de login", "Login, senha ou perfil incorretos!")
 
             cursor.close()
             conexao.close()
 
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao verificar login: {e}")
-
 
     def abrir_menu_principal(self):
         MenuGUI()
