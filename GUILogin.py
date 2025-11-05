@@ -1,9 +1,11 @@
 import tkinter as tk
-
 from tkinter import ttk, messagebox
+
 from ConexaoBanco import ConexaoBanco
 
 from GUIMenu import MenuGUI
+
+import hashlib
 
 
 class LoginGui:
@@ -60,9 +62,9 @@ class LoginGui:
 
             resultados = cursor.fetchall()
 
-            # Preencher ComboBox com os perfis
+            # Preencher ComboBox com os perfis e garantindo que id_perfil seja INT
 
-            self.perfis = {row[1]: row[0] for row in resultados}
+            self.perfis = {row[1]: int(row[0]) for row in resultados}
             self.combobox_perfil['values'] = list(self.perfis.keys())
 
             # Fechar o cursor e a conexão
@@ -74,15 +76,28 @@ class LoginGui:
 
     # Verificando a autenticação
     def verificar_login(self):
-        login = self.entry_login.get()
+        login = self.entry_login.get().strip() # .strip() é usado para remover os espaços em branco
         senha = self.entry_senha.get()
-        nomeperfil = self.combobox_perfil.get()
-        id_perfil = self.perfis.get(nomeperfil)
+        nome_perfil = self.combobox_perfil.get().strip()
+
+        # Verificando se as variáveis login, senha e nome_perfil estão vazias
+        if not login or not senha or not nome_perfil:
+            messagebox.showerror("Erro!", "Preencha todos os campos!")
+            return 
+
+        id_perfil = self.perfis.get(nome_perfil)
+
+        if id_perfil is None:
+            messagebox.showerror("Erro!", "Perfil inválido!")
+            return 
+
+        # Gerar hash SHA-256 da senha digitada
+
+        senha_hash = hashlib.sha256(senha.encode('utf-8')).hexdigest()
 
         # Verificação dos valores antes da consulta
-        print(
-            f"Login: {login}, Senha: {senha}, Perfil: {nomeperfil} (ID: {id_perfil}) ")
-
+        # print(f"Login: {login}, Senha: {senha}, Perfil: {nome_perfil} (ID: {id_perfil}) ")
+        
         try:
             # Conexão com Banco de Dados
             conexao = ConexaoBanco().get_conexao()
@@ -90,7 +105,7 @@ class LoginGui:
 
             # Consulta para verificar o login, senha e perfil
             query = "SELECT * FROM login WHERE login = %s AND senha = %s AND perfil = %s "
-            cursor.execute(query, (login, senha, id_perfil))
+            cursor.execute(query, (login, senha_hash, id_perfil))
             resultado = cursor.fetchone()
 
             # Adicionando depuração
