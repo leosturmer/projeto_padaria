@@ -1,5 +1,6 @@
 import tkinter as tk
 from GUICadastroProdutos import CadastroProdutos
+from GUIManutencaoProduto import ManutencaoProduto
 
 
 class MenuGUI(tk.Tk):
@@ -49,7 +50,8 @@ class MenuGUI(tk.Tk):
         CadastroProdutos(menu_window)
     
     def abrir_ManuProdutos(self):
-        pass
+        menu_window = tk.Toplevel(self)
+        ManutencaoProduto(menu_window)
 
     # def sair(self):
     #     self.destroy()
