@@ -14,6 +14,7 @@ class ConexaoBanco:
                 database='padaria',
                 user='root',
                 password=''
+
                 )
             
             if conexao.is_connected():
