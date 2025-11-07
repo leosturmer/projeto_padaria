@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-
-# from ProdutoDAO import ProdutoDAO
+from ProdutoDAO import ProdutoDAO
 
 class ManutencaoProduto:
     def __init__(self, janela):
@@ -15,13 +14,22 @@ class ManutencaoProduto:
         self.tree.heading(column="valor", text="Valor")
         self.tree.heading(column="quantidade", text="Quantidade")
 
-
         self.tree.pack(fill=tk.BOTH, expand=True)
 
+        self.pDAO = ProdutoDAO()
+        self.preencher_tabela()
 
+    
+    def preencher_tabela(self):
+        try: 
+            produtos = self.pDAO.buscar_produtos()
 
-        # self.dao = ProdutoDAO()
-        # self.preencher_tabela(self)
+            for produto in produtos:
+                self.tree.insert("", "end", values=(produto.nome, produto.valor, produto.quantidade))
+                
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao preencher a tabela: {e}")
+
 
     def excluir_produto_selecionado(self):
         item_selecionado = self.tree.selection()

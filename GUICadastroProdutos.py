@@ -8,7 +8,7 @@ class CadastroProdutos:
     def __init__(self, root):
         self.root = root
         self.root.title("Cadastro de Produtos")
-        self.root.geometry("270x150")
+        self.root.geometry("300x150")
 
         # Labels e entradas para os dados dos produtos
 
@@ -36,7 +36,25 @@ class CadastroProdutos:
         btn_limpar.grid(row=3, column=2, padx=5)
 
     def salvar_produto(self):
-        pass
+        # Importação movida para dentro da função para evitar circularidade
+        from ProdutoDAO import ProdutoDAO
+
+        nome = self.entry_nome.get()
+        valor = Decimal(self.entry_valor.get())
+        quantidade = int(self.entry_quantidade.get())
+
+        # Criando uma instância do ProdutoVO
+        pVO = ProdutoVO(nome, valor, quantidade)
+
+        # Salvando os produtos no banco de dados ou exibindo os dados
+        pDAO = ProdutoDAO()
+        pDAO.cadastrar_produtos(pVO.to_dict())
+        messagebox.showinfo("Produto salvo!", f"Produto {nome} salvo com sucesso!")
+
+        self.limpar_produtos()
+
 
     def limpar_produtos(self):
-        pass
+        self.entry_nome.delete(0, tk.END)
+        self.entry_valor.delete(0, tk.END)
+        self.entry_quantidade.delete(0, tk.END)

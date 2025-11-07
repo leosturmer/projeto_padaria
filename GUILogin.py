@@ -109,7 +109,7 @@ class LoginGui:
             resultado = cursor.fetchone()
 
             # Adicionando depuração
-            print(f"Resultado da consulta: {resultado}")
+            # print(f"Resultado da consulta: {resultado}")
 
             if resultado:
                 messagebox.showinfo(f"Login bem-sucedido",
