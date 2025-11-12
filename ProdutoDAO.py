@@ -56,7 +56,8 @@ class ProdutoDAO:
             if self.conexao.is_connected():
                 self.conexao.close() 
             
-
+    def alterar_produto(self):
+        pass
 
 
 class ProdutoVO:
