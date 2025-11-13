@@ -14,7 +14,6 @@ class ManutencaoProduto:
         self.janela.geometry("1000x600")
 
         # Frame para a janela
-
         frame_tabela = tk.Frame(janela)
         frame_tabela.pack(pady=10, padx=10, fill=tk.BOTH, expand=True)
 
@@ -30,7 +29,7 @@ class ManutencaoProduto:
 
         self.tree.pack(fill=tk.BOTH, expand=True)
         # Liga o evento de seleção
-        self.tree.bind("<<TreeViewSelect>>", self.selecionar_produto)
+        self.tree.bind("<<TreeviewSelect>>", self.selecionar_produto)
 
         # Frame para os campos de alteração
 
@@ -88,13 +87,30 @@ class ManutencaoProduto:
     def selecionar_produto(self, event):
         self.limpar_campos()
         item_selecionado = self.tree.focus()
+
         if item_selecionado:
             valores = self.tree.item(item_selecionado, "values")
             if valores:
-                self.produto_selecionado_id = int(valores[0])
-                self.entry_nome.insert(valores[1])
-                self.entry_valor.insert(valores[2])
-                self.entry_quantidade.insert(valores[3])
+                self.produto_selecionado_id = (valores[3])
+                self.entry_nome.insert(0, valores[0])
+                self.entry_valor.insert(0, valores[1])
+                self.entry_quantidade.insert(0, valores[2])
+
+    def preencher_tabela(self):
+        # Limpa a tabela antes de preencher novamente
+
+        for i in self.tree.get_children():
+            self.tree.delete(i)
+
+        try:
+            produtos = self.pDAO.buscar_produtos()
+
+            for produto in produtos:
+                self.tree.insert("", "end", values=(produto.nome, produto.valor, produto.quantidade, produto.id_produtos))
+
+        except Exception as e:
+            messagebox.showerror("Erro", f"Erro ao preencher a tabela: {e}")
+
 
     def alterar_produto(self):
         if not self.produto_selecionado_id:
@@ -122,6 +138,7 @@ class ManutencaoProduto:
 
         pVO = ProdutoVO(nome, valor, quantidade,
                         id_produtos=self.produto_selecionado_id)
+        
         if self.pDAO.alterar_produto(pVO.to_dict()):
             messagebox.showinfo(
                 "Sucesso!", f"Produto ID {self.produto_selecionado_id} alterado com sucesso!")
@@ -159,18 +176,3 @@ class ManutencaoProduto:
 
             # Se self.dao.excluir_produto falhar, uma mensagem de erro já será mostrada pelo DAO.
 
-    def preencher_tabela(self):
-        # Limpa a tabela antes de preencher novamente
-
-        for i in self.tree.get_children():
-            self.tree.delete(i)
-
-        try:
-            produtos = self.pDAO.buscar_produtos()
-
-            for produto in produtos:
-                self.tree.insert("", "end", values=(produto.id_produtos,
-                                                    produto.nome, produto.valor, produto.quantidade))
-
-        except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao preencher a tabela: {e}")

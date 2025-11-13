@@ -39,11 +39,16 @@ class CadastroProdutos:
         # Importação movida para dentro da função para evitar circularidade
         from ProdutoDAO import ProdutoDAO
 
-        nome = self.entry_nome.get()
-        valor = Decimal(self.entry_valor.get())
-        quantidade = int(self.entry_quantidade.get())
+        try:
+            nome = self.entry_nome.get().strip()
+            valor = Decimal(self.entry_valor.get().strip())
+            quantidade = int(self.entry_quantidade.get().strip())
 
-        # Criando uma instância do ProdutoVO
+        except Exception:
+            messagebox.showerror("Erro de entrada", "Verifique se o valor e quantidade estão preenchidos corretamente")
+            return
+
+        # Criando uma instância do ProdutoVO (Note que não passamos id_produtos)
         pVO = ProdutoVO(nome, valor, quantidade)
 
         # Salvando os produtos no banco de dados ou exibindo os dados

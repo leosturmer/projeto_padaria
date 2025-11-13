@@ -5,8 +5,14 @@ from ProdutoVO import ProdutoVO
 
 class ProdutoDAO:
     def __init__(self): # Método construtor
-        self.conexao = ConexaoBanco().get_conexao()
-        self.cursor = self.conexao.cursor()
+        self.conexao = ConexaoBanco().get_conexao() # Obtendo a conexão no construtor
+
+        # Verificando se a conexão é válida antes de tentar criar o cursor
+
+        if self.conexao and self.conexao.is_connected():
+            self.cursor = self.conexao.cursor()
+        else:
+            self.cursor = None
 
 
     def cadastrar_produtos(self, produto_dict):
@@ -15,13 +21,14 @@ class ProdutoDAO:
                 """
         valores = (produto_dict["nome"], produto_dict["valor"], produto_dict["quantidade"])
 
-        
-        self.cursor.execute(sql, valores)
-        self.conexao.commit()
-
-        # Depurando 
-        print(f"Produto {produto_dict["nome"]} salvo com sucesso no banco de dados")
-
+        try:
+            self.cursor.execute(sql, valores)
+            self.conexao.commit()
+            # Depurando 
+            print(f"Produto {produto_dict["nome"]} salvo com sucesso no banco de dados")
+        except Error as e:
+            messagebox.showerror("Erro de cadastro", f"Erro ao cadastrar produto: {e}")
+            self.conexao.rollback()
 
     def __del__(self): # Método destrutor
         self.cursor.close()
@@ -40,7 +47,7 @@ class ProdutoDAO:
 
                 for row in rows:
                     pVO = ProdutoVO(
-                        id_produtos=row[0],
+                        id_produtos=int(row[0]),
                         nome=row[1],
                         valor=row[2],
                         quantidade=row[3]
@@ -52,12 +59,33 @@ class ProdutoDAO:
         except Error as e:
             messagebox.showerror("Erro!", f"Erro ao buscar produto: {e}")
         
-        finally:
-            if self.conexao.is_connected():
-                self.conexao.close() 
+        # finally:
+        #     if self.conexao.is_connected():
+        #         self.conexao.close() 
             
-    def alterar_produto(self):
-        pass
+    def alterar_produto(self, produto_dict):
+        # if self.conexao.is_connected():
+        #     return 
+        
+        if not self.cursor: 
+            return
+        
+        sql = """UPDATE produtos 
+        SET nome = %s, valor = %s, quantidade = %s
+        WHERE id_produtos = %s;"""
+
+        valores = (produto_dict['nome'], produto_dict['valor'], produto_dict['quantidade'], produto_dict['id_produtos'])
+        
+        try:
+            self.cursor.execute(sql, valores)
+            self.conexao.commit()
+            return self.cursor.rowcount > 0 # Retorna True se alguma linha for alterada
+            
+        except Error as e:
+            messagebox.showerror("Erro de alteração", f"Erro ao alterar produto: {e}")
+            self.conexao.rollback()
+            return False
+        
 
 
 class ProdutoVO:
