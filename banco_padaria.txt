@@ -5,7 +5,7 @@ USE padaria;
 CREATE TABLE produtos(
 	id_produtos INT AUTO_INCREMENT PRIMARY KEY,
 	nome VARCHAR(50) NOT NULL,
-	valor DECIMAL, 
+	valor DECIMAL(10,2), 
 	quantidade INT
 );
 

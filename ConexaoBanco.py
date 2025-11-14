@@ -4,7 +4,6 @@ import mysql.connector
 from mysql.connector import Error
 from tkinter import messagebox
 
-
 class ConexaoBanco:
     def get_conexao(self):
         conexao = None

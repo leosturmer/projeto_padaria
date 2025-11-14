@@ -16,13 +16,14 @@ class ManutencaoProduto:
         # Dicionário para mapear itens do Treeview ao ID do produto
         self.item_to_id = {}
 
-
         # Frame para a janela
         frame_tabela = tk.Frame(janela)
         frame_tabela.pack(pady=10, padx=10, fill=tk.BOTH, expand=True)
+
         # Criando os Widgets
         # Apenas as colunas visíveis: nome, valor, quantidade
-        self.tree = ttk.Treeview(janela, columns=("nome", "valor", "quantidade"), show='headings')
+        self.tree = ttk.Treeview(janela, columns=(
+            "nome", "valor", "quantidade"), show='headings')
 
         self.tree.heading(column="nome", text="Nome")
         self.tree.column("nome", width=250)
@@ -97,10 +98,12 @@ class ManutencaoProduto:
             if valores:
                 self.produto_selecionado_id = (valores[3])
                 self.entry_nome.insert(0, valores[0])
+                # Formatar para 2 casas depois da vírgula
                 self.entry_valor.insert(0, valores[1])
                 self.entry_quantidade.insert(0, valores[2])
 
     def preencher_tabela(self):
+
         # Limpa a tabela antes de preencher novamente
 
         for i in self.tree.get_children():
@@ -108,13 +111,10 @@ class ManutencaoProduto:
 
         try:
             produtos = self.pDAO.buscar_produtos()
-
             for produto in produtos:
                 self.tree.insert("", "end", values=(produto.nome, produto.valor, produto.quantidade, produto.id_produtos))
-
         except Exception as e:
             messagebox.showerror("Erro", f"Erro ao preencher a tabela: {e}")
-
 
     def alterar_produto(self):
         if not self.produto_selecionado_id:
@@ -145,7 +145,7 @@ class ManutencaoProduto:
         
         if self.pDAO.alterar_produto(pVO.to_dict()):
             messagebox.showinfo(
-                "Sucesso!", f"Produto ID {self.produto_selecionado_id} alterado com sucesso!")
+                "Sucesso!", f"{pVO.nome} alterado com sucesso!")
             self.preencher_tabela()
             self.limpar_campos()
 
@@ -158,10 +158,11 @@ class ManutencaoProduto:
             return
 
         # Confirmação de exclusão
-        resposta = messagebox.askyesno("Confirmação", f"Tem certeza que deseja excluir o produto ID {self.produto_selecionado_id}?")
+        resposta = messagebox.askyesno("Confirmação", f"Tem certeza que deseja excluir {self.entry_nome.get()}?")
+
         if resposta:
             if self.pDAO.excluir_produto(self.produto_selecionado_id):
-                messagebox.showinfo("Sucesso", f"Produto ID {self.produto_selecionado_id} excluído com sucesso!")
+                messagebox.showinfo("Sucesso", f"{self.entry_nome.get()} excluído com sucesso!")
                 self.preencher_tabela()
                 self.limpar_campos()
             else:
