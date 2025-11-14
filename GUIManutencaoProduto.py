@@ -13,12 +13,16 @@ class ManutencaoProduto:
         self.janela.title("Manutenção de Produtos")
         self.janela.geometry("1000x600")
 
+        # Dicionário para mapear itens do Treeview ao ID do produto
+        self.item_to_id = {}
+
+
         # Frame para a janela
         frame_tabela = tk.Frame(janela)
         frame_tabela.pack(pady=10, padx=10, fill=tk.BOTH, expand=True)
-
-        self.tree = ttk.Treeview(janela, columns=(
-            "nome", "valor", "quantidade"), show="headings")
+        # Criando os Widgets
+        # Apenas as colunas visíveis: nome, valor, quantidade
+        self.tree = ttk.Treeview(janela, columns=("nome", "valor", "quantidade"), show='headings')
 
         self.tree.heading(column="nome", text="Nome")
         self.tree.column("nome", width=250)
@@ -149,30 +153,17 @@ class ManutencaoProduto:
             messagebox.showerror("Erro!", "Falha ao alterar o produto ou nenhum dado foi modificado.")
 
     def excluir_produto(self):
-        pass
-
-    def excluir_produto_selecionado(self):
-        item_selecionado = self.tree.selection()
-
-        if not item_selecionado:
-            messagebox.showwarning(
-                "Aviso", "Selecione um produto para excluir.")
+        if not self.produto_selecionado_id:
+            messagebox.showwarning("Aviso", "Selecione um produto na tabela para excluir.")
             return
 
-        # A TreeView só tem nome, valor e quantidade.
-        # Para excluir, você precisa do ID
-        # Você teria que armazenar o ID do produto junto com os dados ou buscar o ID.
-
-        # Assumindo que você armazenou o ID como um valor oculto no 'item_selecionado'
-
-        id_produto = self.tree.item(item_selecionado, "tags")[0]
-        nome_produto = self.tree.item(item_selecionado, "values")[0]
-
-        if messagebox.askyesno("Confirmação", f"Deseja realmente excluir o produto '{nome_produto}?"):
-            if self.dao.excluir_produto(id_produto):
-                messagebox.showinfo("Sucesso", "Produto excluído com sucesso.")
-                self.limpar_tabela()
+        # Confirmação de exclusão
+        resposta = messagebox.askyesno("Confirmação", f"Tem certeza que deseja excluir o produto ID {self.produto_selecionado_id}?")
+        if resposta:
+            if self.pDAO.excluir_produto(self.produto_selecionado_id):
+                messagebox.showinfo("Sucesso", f"Produto ID {self.produto_selecionado_id} excluído com sucesso!")
                 self.preencher_tabela()
-
-            # Se self.dao.excluir_produto falhar, uma mensagem de erro já será mostrada pelo DAO.
+                self.limpar_campos()
+            else:
+                messagebox.showerror("Erro", "Falha ao excluir o produto.")
 
